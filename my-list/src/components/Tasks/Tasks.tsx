@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from "react";
+import React, { FormEvent, useEffect, useState } from "react";
 import styles from "./styles.module.scss";
 
 
@@ -21,13 +21,23 @@ export const Tasks: React.FC = () => {
             return
         }
 
-        setTask([
+        const newTasks = [
             ...task,
-            { id:1 ,title: taskTitle, done: false},
-        ])
+            { id: new Date().getTime(),title: taskTitle, done: false},
+        ]
+        setTask(newTasks)
+        localStorage.setItem("tasks", JSON.stringify(newTasks) )
         setTaskTitle("");
 
     }
+
+    useEffect(()=>{
+        const tasksOnLocalStrorage = localStorage.getItem('tasks')
+
+        if(tasksOnLocalStrorage){
+            setTask(JSON.parse(tasksOnLocalStrorage));
+        }
+    },[])
 
 
 
@@ -50,11 +60,11 @@ export const Tasks: React.FC = () => {
             <ul>
                 {task.map(task =>{
                     return (
-                        <li>
+                        <li key={task.id}>
                             <input type="checkbox" id={`task-${task.id}`} />
                             <label htmlFor={`task-${task.id}`}>{task.title}</label>
                         </li>   
-                    )
+                    );
                 })}
             </ul>
         </section>
